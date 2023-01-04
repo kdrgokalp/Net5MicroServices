@@ -1,0 +1,128 @@
+{
+  "Routes": [
+    //Product Api //routing iþlemleri yapýlýyor.
+    {
+      "DownstreamPathTemplate": "/api/v1/Product",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingproducts", //Dockercompose.yml dosyasýndaki ismi yazýyoruz.
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Product", //uygulamaya geldiði port bilgisi
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ] //hangi metotlara ulaþmak istedði bilgisi
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Product/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingproducts",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Product/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    },
+    //Sourcing Api Auction
+    {
+      "DownstreamPathTemplate": "/api/v1/Auction",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingsourcing",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Auction",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Auction/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingsourcing",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Auction/{id}",
+      "UpstreamHttpMethod": [ "GET", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Auction/CompleteAuction/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingsourcing",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Auction/CompleteAuction/{id}",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    //Sourcing Api Bid
+    {
+      "DownstreamPathTemplate": "/api/v1/Bid",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingsourcing",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Bid",
+      "UpstreamHttpMethod": [ "POST" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Bid/GetBidsByAuctionId/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingsourcing",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Bid/GetBidsByAuctionId/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Bid/GetWinnerBid/{id}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingsourcing",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Bid/GetWinnerBid/{id}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    //Order Api
+    {
+      "DownstreamPathTemplate": "/api/v1/Order/GetOrdersByUserName/{userName}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingorder",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Order/GetOrdersByUserName/{userName}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/v1/Order",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "sourcingorder",
+          "Port": "80"
+        }
+      ],
+      "UpstreamPathTemplate": "/Order",
+      "UpstreamHttpMethod": [ "GET" ]
+    }
+  ]
+}

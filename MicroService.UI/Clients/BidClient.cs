@@ -1,0 +1,57 @@
+﻿using MicroService.UI.Core.Common;
+using MicroService.UI.Core.ResultModels;
+using MicroService.UI.ViewModel;
+
+using Newtonsoft.Json;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading.Tasks;
+
+namespace MicroService.UI.Clients
+{
+    public class BidClient
+    {
+        public HttpClient _client { get; }
+
+        public BidClient(HttpClient client)
+        {
+            _client = client;
+            _client.BaseAddress = new Uri(CommonInfo.BaseAddress);
+        }
+
+        public async Task<Result<List<BidsViewModel>>> GetAllBidsByAuctionById(string id)
+        {
+            var response = await _client.GetAsync("/Bid/GetAllBidsByAuctionId?id=" + id);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<List<BidsViewModel>>(responseData);
+                if (result != null)
+                {
+                    return new Result<List<BidsViewModel>>(true, ResultConstant.RecordFound, result.ToList());
+                }
+                return new Result<List<BidsViewModel>>(false, ResultConstant.RecordFound);
+            }
+            return new Result<List<BidsViewModel>>(false, ResultConstant.RecordFound);
+        }
+
+        public async Task<Result<string>> SendBid(BidsViewModel model)
+        {
+            var dataAsString = JsonConvert.SerializeObject(model);
+            var content = new StringContent(dataAsString);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            var response = await _client.PostAsync("/Bid", content);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                return new Result<string>(true, ResultConstant.RecordCreateSuccessfully, responseData);
+            }
+            return new Result<string>(false, ResultConstant.RecordCreateNotSuccessfully);
+        }
+        
+    }
+}

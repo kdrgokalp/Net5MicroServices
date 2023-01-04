@@ -1,0 +1,84 @@
+version: '3.4'
+
+services:
+  productMongoDb:
+    container_name: productMongoDb
+    restart: always
+    volumes:
+      - ${WEBAPP_STORAGE_HOME}/site:/data/db
+      #- ./data:/data/db
+    ports:
+      - "27017:27017"
+      
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  orderSqlDb:
+    container_name: orderSqlDb
+    ports:
+      - 1433:1433
+    environment: 
+      SA_PASSWORD: "SqlDb123456"
+      ACCEPT_EULA: "Y"
+
+  microservice.products:
+    container_name: sourcingproducts
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      #- ASPNETCORE_URLS=https://+:443;http://+:80
+      - "ProductDatabaseSettings:ConnectionString=mongodb://productMongoDb:27017"
+    depends_on:
+      - productMongoDb
+    ports:
+      - "8000:80"
+    volumes:
+      - ${HOME}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+     
+  microservice.sourcing:
+    container_name: sourcingsourcing
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "SourcingDatabaseSettings:ConnectionString=mongodb://productMongoDb:27017"
+      - "EventBus:HostName=rabbitmq"
+    depends_on:
+      - productMongoDb
+      - rabbitmq
+    ports:
+      - "8001:80"
+    volumes:
+      - ${HOME}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+
+  microservice.order:
+    container_name: sourcingorder
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:OrderConnection=Server=orderSqlDb;Database=orderSqlDb;User Id=sa;Password=SqlDb123456"
+      - EventBus:HostName=rabbitmq
+    depends_on:
+      - orderSqlDb
+      - rabbitmq
+    volumes:
+      - ${HOME}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+    ports:
+      - "8002:80"
+
+  microservice.apigateway:
+    container_name: sourcingapigateway
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - microservice.products
+      - microservice.order
+      - microservice.sourcing
+    ports:
+      - "5000:80"
+    volumes:
+      - ${HOME}/ASP.NET/Https:/root/.aspnet/https:ro
+      - ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets

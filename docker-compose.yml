@@ -1,0 +1,38 @@
+version: '3.4'
+
+services:
+  productMongoDb:
+    image: mongo
+
+  rabbitmq:
+    image: rabbitmq:3-management
+
+  orderSqlDb: 
+    image: mcr.microsoft.com/mssql/server
+
+  microservice.products:
+    image: ${DOCKER_REGISTRY-}microserviceproducts
+    build:
+      context: .
+      dockerfile: MicroService.Products/Dockerfile
+
+  microservice.sourcing:
+    image: ${DOCKER_REGISTRY-}microservicesourcing
+    build:
+      context: .
+      dockerfile: MicroService.Sourcing/Dockerfile
+
+
+  microservice.order:
+    image: ${DOCKER_REGISTRY-}microserviceorder
+    build:
+      context: .
+      dockerfile: MicroService.Order/Dockerfile
+
+
+  microservice.apigateway:
+    image: ${DOCKER_REGISTRY-}microserviceapigateway
+    build:
+      context: .
+      dockerfile: MicroService.ApiGateway/Dockerfile
+
